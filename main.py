@@ -81,7 +81,7 @@ maintenance_yard_data = {
 
 clock = Clock()
 
-time_randomizer = 30
+time_randomizer = 15
 
 exit_hours = 3
 exit_minutes = 30
@@ -250,6 +250,11 @@ class Main:
 
 main = Main()
 
+starting_train_number = 0
+
+for line in main.lines:
+    starting_train_number += len(line.trains)    
+
 while((clock.hours*60) + clock.minutes < (exit_hours*60 + exit_minutes)
       and main.check_lines()):
     main.randomize_time_skip()
@@ -275,11 +280,14 @@ for m in main.maintenance_yards:
 
 while((clock.hours*60) + clock.minutes < (5*60)):
     print(f"{clock.hours}:{clock.minutes}")
+    
     if (clock.minutes == 59):
         clock.hours += 1
         clock.minutes = 0
     else:
         clock.minutes += 1
+    
+    main.maintenance_countdown_increments()
 
 trains_to_exit = True
 
@@ -305,18 +313,7 @@ for m in main.maintenance_yards:
     print(m.stack)
 
 print("------------------")
+print(f"Starting number of trains: {starting_train_number}")
 print(f"Trains that arrived in time for maintenance: {main.arrived_count}")
 print(f"Trains that left from maintenance: {main.left_count}")
 print("------------------")
-print("Birds flying high")
-print("You know how I feel")
-print("Sun in the sky")
-print("You know how I feel")
-print("Breeze driftin' on by")
-print("You know how I feel")
-print("It's a new dawn")
-print("It's a new day")
-print("It's a new life")
-print("For me")
-print("And I'm feeling good")
-print("I'm feeling good")
