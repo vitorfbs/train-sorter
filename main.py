@@ -81,13 +81,14 @@ maintenance_yard_data = {
 
 clock = Clock()
 
-time_skip = 5
+time_randomizer = 10
 
 exit_hours = 3
 exit_minutes = 30
 
 class Main:
     def __init__(self):
+        self.time_skip = 1
         
         self.lines = []
         self.generate_lines()
@@ -205,7 +206,7 @@ class Main:
             if(len(self.maintenance_yards[self.maintenance_yards.index(yard)].stack) > 0):
                 for train in self.maintenance_yards[self.maintenance_yards.index(yard)].stack:
                     train_index = self.maintenance_yards[self.maintenance_yards.index(yard)].stack.index(train)
-                    self.maintenance_yards[self.maintenance_yards.index(yard)].stack[train_index].maintenance_countdown += time_skip
+                    self.maintenance_yards[self.maintenance_yards.index(yard)].stack[train_index].maintenance_countdown += self.time_skip
 
     def send_trains_to_lines(self):
         empty_yards = 0
@@ -228,16 +229,30 @@ class Main:
         print("")
         return empty_yards
 
+    def randomize_time_skip(self):
+        self.time_skip = randrange(1, time_randomizer)
+
+    def check_lines(self):
+        for line in self.lines:
+            for train in line.trains:
+                if(isinstance(train, Train)):
+                    return True
+        return False
+
+
 main = Main()
 
-while((clock.hours*60) + clock.minutes < (exit_hours*60 + exit_minutes)):
-    print(f"{clock.hours}:{clock.minutes}")
+while((clock.hours*60) + clock.minutes < (exit_hours*60 + exit_minutes)
+      and main.check_lines()):
+    main.randomize_time_skip()
 
-    if (clock.minutes >= 59):
+    if (clock.minutes + main.time_skip >= 59):
         clock.hours += 1
-        clock.minutes = 0
+        clock.minutes += main.time_skip - clock.minutes
     else:
-        clock.minutes += time_skip
+        clock.minutes += main.time_skip
+
+    print(f"{clock.hours}:{clock.minutes}")
 
     main.manage_yards()
     main.maintenance_countdown_increments()
@@ -260,12 +275,14 @@ while((clock.hours*60) + clock.minutes < (5*60)):
 trains_to_exit = True
 
 while(trains_to_exit):
-    print(f"{clock.hours}:{clock.minutes}")
-    if (clock.minutes == 59):
+    main.randomize_time_skip()
+    if (clock.minutes + main.time_skip >= 59):
         clock.hours += 1
-        clock.minutes = 0
+        clock.minutes += main.time_skip - clock.minutes
     else:
-        clock.minutes += 1
+        clock.minutes += main.time_skip
+
+    print(f"{clock.hours}:{clock.minutes}")
     
     check = main.send_trains_to_lines()
     main.maintenance_countdown_increments()
