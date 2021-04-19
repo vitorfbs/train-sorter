@@ -81,7 +81,7 @@ maintenance_yard_data = {
 
 clock = Clock()
 
-time_randomizer = 10
+time_randomizer = 30
 
 exit_hours = 3
 exit_minutes = 30
@@ -89,6 +89,9 @@ exit_minutes = 30
 class Main:
     def __init__(self):
         self.time_skip = 1
+
+        self.arrived_count = 0
+        self.left_count = 0
         
         self.lines = []
         self.generate_lines()
@@ -182,11 +185,12 @@ class Main:
             if(isinstance(train, Train)):
                 self.maintenance_yards[self.lines[line].maintenance_exit].stack.append(train)
                 self.lines[line].maintenance_check += 1
+                self.arrived_count += 1
             else:
                 self.maintenance_yards[self.lines[line].maintenance_exit].secondary_stack.append(train)
-            print(self.maintenance_yards[self.lines[line].maintenance_exit].stack)
         else:
             print(f"There are no more trains to send to maintenace. Standby.")
+            print("")
 
 
     def send_maintenance_cart_to_line(self, line):
@@ -196,6 +200,7 @@ class Main:
             self.lines[line].trains.append(cart)
         else:
             print(f"There are no more carts for maintenance. Standby.")
+            print("")
 
     def reset_maintenance_yard_exits(self):
         for yard in self.maintenance_yards:
@@ -222,10 +227,13 @@ class Main:
                             train = yard.stack.pop()
                             self.lines[i].trains.append(train)
                             yard.busy_exits += 1
+                            self.left_count += 1
                         else:
                             yard.busy_exits = yard.exits
+                    print("")
             else:
                 print("Waiting for last train to complete maintenance")
+                print("")
         print("")
         return empty_yards
 
@@ -253,6 +261,7 @@ while((clock.hours*60) + clock.minutes < (exit_hours*60 + exit_minutes)
         clock.minutes += main.time_skip
 
     print(f"{clock.hours}:{clock.minutes}")
+    print("")
 
     main.manage_yards()
     main.maintenance_countdown_increments()
@@ -283,6 +292,7 @@ while(trains_to_exit):
         clock.minutes += main.time_skip
 
     print(f"{clock.hours}:{clock.minutes}")
+    print("")
     
     check = main.send_trains_to_lines()
     main.maintenance_countdown_increments()
@@ -294,6 +304,9 @@ for m in main.maintenance_yards:
     print(m.name)
     print(m.stack)
 
+print("------------------")
+print(f"Trains that arrived in time for maintenance: {main.arrived_count}")
+print(f"Trains that left from maintenance: {main.left_count}")
 print("------------------")
 print("Birds flying high")
 print("You know how I feel")

@@ -12,5 +12,5 @@ class Line:
         self.trains = []
 
     def generate_trains(self):
-        for i in range(1, randrange(self.length)):
+        for i in range(0, randrange(self.length)):
             self.trains.append(Train(i, self.name))
